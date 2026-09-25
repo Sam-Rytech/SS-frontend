@@ -261,10 +261,19 @@ export async function fetchProtocolStatus(): Promise<ProtocolStatus> {
   return res.json();
 }
 
+export interface InvestInInvoiceResult {
+  success: boolean;
+  invested_amount: number;
+  /** Soroban transaction hash for the invest call, when the backend
+   * populates it (issue #310) — used to link out to the block explorer.
+   * Optional so older backend responses without it degrade gracefully. */
+  tx_hash?: string;
+}
+
 export async function investInInvoice(
   invoiceId: string,
   amount: number
-): Promise<{ success: boolean; invested_amount: number }> {
+): Promise<InvestInInvoiceResult> {
   const res = await fetch(`${API_BASE}/invoices/${invoiceId}/invest`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
