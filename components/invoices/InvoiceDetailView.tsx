@@ -19,6 +19,7 @@ import { FundingProgressBar } from "@/components/invoices/FundingProgressBar";
 import { InvoiceBackButton } from "@/components/invoices/InvoiceBackButton";
 import { InvoiceDocumentsTab } from "@/components/invoices/InvoiceDocumentsTab";
 import { InvoiceFinancials } from "@/components/invoices/InvoiceFinancials";
+import { InvoiceMaturityStatus } from "@/components/invoices/InvoiceMaturityStatus";
 import { InvoiceMetaTags } from "@/components/invoices/InvoiceMetaTags";
 import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
 import { InvestmentModal } from "@/components/invoices/InvestmentModal";
@@ -367,6 +368,10 @@ export function InvoiceDetailView({ invoiceId }: InvoiceDetailViewProps) {
             ))}
           </CardContent>
         </Card>
+      )}
+
+      {invoice.status === "funded" && (
+        <InvoiceMaturityStatus maturityDate={invoice.maturity_date} />
       )}
 
       {(invoice.status === "settled" || invoice.status === "funded") && (

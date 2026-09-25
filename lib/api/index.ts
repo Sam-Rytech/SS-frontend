@@ -29,6 +29,10 @@ export interface Invoice {
   next_cursor: string | null;
   /** Issuer reputation 0-100; absent when the issuer has no settlement history. */
   issuer_score?: number;
+  /** Settlement maturity date once an invoice is funded (issue #314). Optional
+   * because older backend responses may not populate it yet — UI must
+   * degrade gracefully when absent rather than assume it's always present. */
+  maturity_date?: string | null;
 }
 
 /** Category tabs on the marketplace homepage (#452). */
