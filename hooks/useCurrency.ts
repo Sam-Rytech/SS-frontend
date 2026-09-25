@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { fetchXlmUsdRate } from "@/lib/api";
 
 export type Currency = "XLM" | "USD";
 
@@ -50,7 +51,10 @@ export function useCurrency() {
     setCurrency(currency === "XLM" ? "USD" : "XLM");
   }, [currency, setCurrency]);
 
-  // Fetch XLM/USD rate from Horizon
+  // Fetches the live XLM/USD rate from the backend rate endpoint. On
+  // failure, silently keeps whatever rate is already in state (the last
+  // known good rate, if any) — the caller surfaces staleness via `isStale`
+  // rather than blocking on a fresh fetch.
   const fetchRate = useCallback(async () => {
     const cached = getStoredRate();
     if (cached && Date.now() - cached.fetchedAt < RATE_CACHE_TTL) {
@@ -61,20 +65,10 @@ export function useCurrency() {
 
     setRateLoading(true);
     try {
-      const res = await fetch(
-        "https://horizon.stellar.org/assets/native?limit=1",
-        { next: { revalidate: 60 } }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        const priceNative = parseFloat(data?.links?.asset?.href ?? "0");
-        // Horizon doesn't directly give XLM/USD; use a fallback approximation
-        // In production, use a proper oracle or price feed
-        const usdRate = 0.12; // Placeholder — replace with real feed
-        setRate(usdRate);
-        setRateFetchedAt(Date.now());
-        setStoredRate(usdRate);
-      }
+      const { rate: usdRate } = await fetchXlmUsdRate();
+      setRate(usdRate);
+      setRateFetchedAt(Date.now());
+      setStoredRate(usdRate);
     } catch {
       // Use last known rate on failure
     } finally {

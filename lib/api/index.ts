@@ -263,6 +263,17 @@ export async function fetchProtocolStatus(): Promise<ProtocolStatus> {
   return res.json();
 }
 
+export interface XlmUsdRate {
+  rate: number;
+}
+
+/** Live XLM/USD exchange rate for the currency toggle. */
+export async function fetchXlmUsdRate(): Promise<XlmUsdRate> {
+  const res = await fetch(`${API_BASE}/rates/xlm-usd`);
+  if (!res.ok) throw new Error("Failed to fetch XLM/USD rate");
+  return res.json();
+}
+
 export async function investInInvoice(
   invoiceId: string,
   amount: number
