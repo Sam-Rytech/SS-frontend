@@ -192,4 +192,56 @@ describe("KycSubmissionForm", () => {
     const submitButton = screen.getByRole("button", { name: "Submit KYC" });
     expect(submitButton).toBeDisabled();
   });
+
+  it("pre-fills the full name field from a previous submission", () => {
+    render(
+      <KycSubmissionForm
+        status="not_submitted"
+        previousSubmission={{
+          fullName: "Jane Doe",
+          country: "Canada",
+          idType: "Passport",
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText("Full Name")).toHaveValue("Jane Doe");
+  });
+
+  it("pre-fills the country and ID type selects from a previous submission", () => {
+    render(
+      <KycSubmissionForm
+        status="not_submitted"
+        previousSubmission={{
+          fullName: "Jane Doe",
+          country: "Canada",
+          idType: "Passport",
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText("Country")).toHaveTextContent("Canada");
+    expect(screen.getByLabelText("Government ID Type")).toHaveTextContent("Passport");
+  });
+
+  it("submit button is enabled immediately when pre-filled from a previous submission", () => {
+    render(
+      <KycSubmissionForm
+        status="not_submitted"
+        previousSubmission={{
+          fullName: "Jane Doe",
+          country: "Canada",
+          idType: "Passport",
+        }}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Submit KYC" })).not.toBeDisabled();
+  });
+
+  it("renders normally with no previous submission", () => {
+    render(<KycSubmissionForm status="not_submitted" previousSubmission={null} />);
+
+    expect(screen.getByLabelText("Full Name")).toHaveValue("");
+  });
 });

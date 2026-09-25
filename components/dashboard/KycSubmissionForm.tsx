@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { submitKyc } from "@/lib/api";
+import type { SellerKycSubmission } from "@/lib/api";
 import type { KycStatus } from "./KycStatusBanner";
 
 const COUNTRIES = [
@@ -44,9 +45,13 @@ type KycFormData = z.infer<typeof kycSchema>;
 
 interface KycSubmissionFormProps {
   status: KycStatus;
+  previousSubmission?: SellerKycSubmission | null;
 }
 
-export function KycSubmissionForm({ status }: KycSubmissionFormProps) {
+export function KycSubmissionForm({
+  status,
+  previousSubmission,
+}: KycSubmissionFormProps) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -60,7 +65,11 @@ export function KycSubmissionForm({ status }: KycSubmissionFormProps) {
     formState: { errors },
   } = useForm<KycFormData>({
     resolver: zodResolver(kycSchema),
-    defaultValues: { fullName: "", country: "", idType: "" },
+    defaultValues: {
+      fullName: previousSubmission?.fullName ?? "",
+      country: previousSubmission?.country ?? "",
+      idType: previousSubmission?.idType ?? "",
+    },
   });
 
   const idTypeValue = watch("idType");
@@ -137,7 +146,10 @@ export function KycSubmissionForm({ status }: KycSubmissionFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="country">Country</Label>
-        <Select onValueChange={(v) => setValue("country", v, { shouldValidate: true })}>
+        <Select
+          defaultValue={previousSubmission?.country || undefined}
+          onValueChange={(v) => setValue("country", v, { shouldValidate: true })}
+        >
           <SelectTrigger id="country">
             <SelectValue placeholder="Select your country" />
           </SelectTrigger>
@@ -156,7 +168,10 @@ export function KycSubmissionForm({ status }: KycSubmissionFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="id-type">Government ID Type</Label>
-        <Select onValueChange={(v) => setValue("idType", v, { shouldValidate: true })}>
+        <Select
+          defaultValue={previousSubmission?.idType || undefined}
+          onValueChange={(v) => setValue("idType", v, { shouldValidate: true })}
+        >
           <SelectTrigger id="id-type">
             <SelectValue placeholder="Select ID type" />
           </SelectTrigger>
