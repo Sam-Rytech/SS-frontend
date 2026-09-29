@@ -13,7 +13,7 @@ import { useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchCreatorProfile } from "@/lib/api";
-import { formatXLM } from "@/lib/format";
+import { Money } from "@/components/currency";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -144,7 +144,7 @@ export function CreatorProfile({ wallet }: { wallet: string }) {
         <Card data-testid="creator-stat-funded">
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Total funded</p>
-            <p className="text-2xl font-bold">{formatXLM(profile.stats.total_funded)}</p>
+            <p className="text-2xl font-bold"><Money xlm={profile.stats.total_funded} /></p>
           </CardContent>
         </Card>
         <Card data-testid="creator-stat-settlement">
@@ -174,7 +174,7 @@ export function CreatorProfile({ wallet }: { wallet: string }) {
                     <div className="min-w-0">
                       <p className="truncate font-medium">{invoice.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        {formatXLM(invoice.amount)} ·{" "}
+                        <Money xlm={invoice.amount} /> ·{" "}
                         {new Date(invoice.created_at).toLocaleDateString()}
                       </p>
                     </div>

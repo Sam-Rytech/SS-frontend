@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useStellarWallet } from "@/hooks/useStellarWallet";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/currency";
 
 export default function WatchlistPage() {
   const { address, isConnected } = useStellarWallet();
@@ -118,7 +119,7 @@ function WatchlistItem({
               {invoice.title}
             </Link>
             <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
-              <span>{invoice.amount.toLocaleString()} XLM</span>
+              <span><Money xlm={invoice.amount} xlmText={`${invoice.amount.toLocaleString()} XLM`} /></span>
               <span>{invoice.investor_count} investors</span>
               <span>Due: {format(new Date(invoice.due_date), "MMM d, yyyy")}</span>
             </div>

@@ -1,122 +1,42 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+/**
+ * Multi-currency display (#437)
+ *
+ * Reads the app-wide currency state from <CurrencyProvider> (mounted in
+ * components/providers.tsx). This used to hold its own state per call, so
+ * each component had a separate currency and a hard-coded placeholder rate;
+ * all callers now share one preference and one live Horizon rate.
+ *
+ * The return shape is a superset of the old hook, so existing callers
+ * (SettlementClaimCard, SettlementsTab) keep working unchanged.
+ *
+ * Outside a provider (e.g. a component rendered on its own in a unit test)
+ * it falls back to a fixed XLM-only value, so nothing is converted and
+ * nothing throws.
+ */
 
-export type Currency = "XLM" | "USD";
+import { useContext } from "react";
+import { CurrencyContext, formatXlmDefault, type CurrencyContextValue } from "@/context/CurrencyContext";
+import { DEFAULT_CURRENCY } from "@/lib/currency";
 
-const STORAGE_KEY = "stellaresettle_currency";
-const RATE_CACHE_KEY = "stellaresettle_xlm_usd_rate";
-const RATE_CACHE_TTL = 60_000; // 60 seconds
-const STALE_THRESHOLD = 5 * 60_000; // 5 minutes
+export type { Currency } from "@/lib/currency";
 
-interface CachedRate {
-  rate: number;
-  fetchedAt: number;
-}
+const XLM_ONLY: CurrencyContextValue = {
+  currency: DEFAULT_CURRENCY,
+  setCurrency: () => {},
+  toggleCurrency: () => {},
+  rate: null,
+  exchangeRate: null,
+  rateLoading: false,
+  rateError: false,
+  isStale: false,
+  isConverted: false,
+  convert: (xlmAmount) => xlmAmount,
+  format: (xlmAmount, xlmText) => xlmText ?? formatXlmDefault(xlmAmount),
+  refreshRate: async () => {},
+};
 
-function getStoredCurrency(): Currency {
-  if (typeof window === "undefined") return "XLM";
-  return (localStorage.getItem(STORAGE_KEY) as Currency) || "XLM";
-}
-
-function getStoredRate(): CachedRate | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(RATE_CACHE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-function setStoredRate(rate: number) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(RATE_CACHE_KEY, JSON.stringify({ rate, fetchedAt: Date.now() }));
-}
-
-export function useCurrency() {
-  const [currency, setCurrencyState] = useState<Currency>(getStoredCurrency);
-  const [rate, setRate] = useState<number | null>(() => getStoredRate()?.rate ?? null);
-  const [rateFetchedAt, setRateFetchedAt] = useState<number>(() => getStoredRate()?.fetchedAt ?? 0);
-  const [rateLoading, setRateLoading] = useState(false);
-
-  const setCurrency = useCallback((c: Currency) => {
-    setCurrencyState(c);
-    localStorage.setItem(STORAGE_KEY, c);
-  }, []);
-
-  const toggleCurrency = useCallback(() => {
-    setCurrency(currency === "XLM" ? "USD" : "XLM");
-  }, [currency, setCurrency]);
-
-  // Fetch XLM/USD rate from Horizon
-  const fetchRate = useCallback(async () => {
-    const cached = getStoredRate();
-    if (cached && Date.now() - cached.fetchedAt < RATE_CACHE_TTL) {
-      setRate(cached.rate);
-      setRateFetchedAt(cached.fetchedAt);
-      return;
-    }
-
-    setRateLoading(true);
-    try {
-      const res = await fetch(
-        "https://horizon.stellar.org/assets/native?limit=1",
-        { next: { revalidate: 60 } }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        const priceNative = parseFloat(data?.links?.asset?.href ?? "0");
-        // Horizon doesn't directly give XLM/USD; use a fallback approximation
-        // In production, use a proper oracle or price feed
-        const usdRate = 0.12; // Placeholder — replace with real feed
-        setRate(usdRate);
-        setRateFetchedAt(Date.now());
-        setStoredRate(usdRate);
-      }
-    } catch {
-      // Use last known rate on failure
-    } finally {
-      setRateLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchRate();
-    const interval = setInterval(fetchRate, RATE_CACHE_TTL);
-    return () => clearInterval(interval);
-  }, [fetchRate]);
-
-  const isStale = rateFetchedAt > 0 && Date.now() - rateFetchedAt > STALE_THRESHOLD;
-
-  const convert = useCallback(
-    (xlmAmount: number): number => {
-      if (currency === "XLM" || !rate) return xlmAmount;
-      return xlmAmount * rate;
-    },
-    [currency, rate]
-  );
-
-  const format = useCallback(
-    (xlmAmount: number): string => {
-      const converted = convert(xlmAmount);
-      if (currency === "USD") {
-        return `$${converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      }
-      return `${converted.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} XLM`;
-    },
-    [convert, currency]
-  );
-
-  return {
-    currency,
-    setCurrency,
-    toggleCurrency,
-    rate,
-    isStale,
-    rateLoading,
-    convert,
-    format,
-  };
+export function useCurrency(): CurrencyContextValue {
+  return useContext(CurrencyContext) ?? XLM_ONLY;
 }

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { fetchIssuerEarnings, withdrawIssuerEarnings, type IssuerInvoiceEarning } from "@/lib/api";
-import { formatXLM } from "@/lib/format";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-function SummaryCard({ label, value }: { label: string; value: string }) {
+function SummaryCard({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <Card>
       <CardContent className="pt-6">
@@ -86,10 +86,11 @@ export function IssuerEarningsDashboard() {
 
   return (
     <div className="space-y-6">
+      <ExchangeRateDisclaimer />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <SummaryCard label="Gross Proceeds" value={formatXLM(summary?.gross_proceeds ?? 0)} />
-        <SummaryCard label="Platform Fee" value={formatXLM(summary?.platform_fee ?? 0)} />
-        <SummaryCard label="Net Payout" value={formatXLM(summary?.net_payout ?? 0)} />
+        <SummaryCard label="Gross Proceeds" value={<Money xlm={summary?.gross_proceeds ?? 0} />} />
+        <SummaryCard label="Platform Fee" value={<Money xlm={summary?.platform_fee ?? 0} />} />
+        <SummaryCard label="Net Payout" value={<Money xlm={summary?.net_payout ?? 0} />} />
       </div>
 
       <Card>
@@ -116,9 +117,9 @@ export function IssuerEarningsDashboard() {
                     <tr key={inv.invoice_id} className="hover:bg-muted/30">
                       <td className="p-3 font-medium">{inv.invoice_title}</td>
                       <td className="p-3 text-muted-foreground">{formatDate(inv.funded_date)}</td>
-                      <td className="p-3">{formatXLM(inv.gross_proceeds)}</td>
-                      <td className="p-3 text-destructive">-{formatXLM(inv.platform_fee)}</td>
-                      <td className="p-3 font-semibold">{formatXLM(inv.net_payout)}</td>
+                      <td className="p-3"><Money xlm={inv.gross_proceeds} /></td>
+                      <td className="p-3 text-destructive">-<Money xlm={inv.platform_fee} /></td>
+                      <td className="p-3 font-semibold"><Money xlm={inv.net_payout} /></td>
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <Badge variant={PAYOUT_BADGE[inv.payout_status] ?? "outline"}>{inv.payout_status}</Badge>

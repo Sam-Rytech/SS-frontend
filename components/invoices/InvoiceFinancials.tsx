@@ -10,7 +10,7 @@
  */
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { formatXLM } from "@/lib/format";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 
 interface InvoiceFinancialsProps {
   /** Face value of the whole invoice. */
@@ -45,7 +45,7 @@ export function InvoiceFinancials({
     {
       key: "face-value",
       label: "Face value",
-      value: formatXLM(faceValue),
+      value: <Money xlm={faceValue} />,
       testId: "financial-face-value",
     },
     {
@@ -66,7 +66,7 @@ export function InvoiceFinancials({
     {
       key: "min-investment",
       label: "Minimum investment",
-      value: formatXLM(minInvestment),
+      value: <Money xlm={minInvestment} />,
       testId: "financial-min-investment",
     },
   ];
@@ -90,6 +90,7 @@ export function InvoiceFinancials({
             </div>
           ))}
         </dl>
+        <ExchangeRateDisclaimer className="mt-4" />
       </CardContent>
     </Card>
   );

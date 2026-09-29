@@ -8,6 +8,7 @@ import { KeyTransferModal } from "@/components/dashboard/KeyTransferModal";
 import { PositionTransferModal } from "@/components/dashboard/PositionTransferModal";
 import { BurnKeyModal } from "@/components/keys/BurnKeyModal";
 import type { InvestmentPosition } from "@/lib/portfolio";
+import { Money } from "@/components/currency";
 
 function formatCommittedXlm(amount: number): string {
   return amount.toLocaleString(undefined, {
@@ -41,7 +42,11 @@ export function PositionCard({ position }: PositionCardProps) {
           <p className="font-semibold">{position.invoice_title}</p>
           <p className="text-sm text-muted-foreground">
             <span data-testid="position-committed">
-              {formatCommittedXlm(position.committed_amount)} XLM committed
+              <Money
+                xlm={position.committed_amount}
+                xlmText={`${formatCommittedXlm(position.committed_amount)} XLM`}
+              />{" "}
+              committed
             </span>
             {" · "}
             <span data-testid="position-share">{shareDisplay}</span>

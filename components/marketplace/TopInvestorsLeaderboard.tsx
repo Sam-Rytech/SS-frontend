@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatXLM } from "@/lib/format";
+import { Money } from "@/components/currency";
 import { truncateAddress } from "@/lib/stellar";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 
@@ -75,7 +75,7 @@ export function TopInvestorsLeaderboard() {
                   <tr key={walletAddr || index} className="hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 font-semibold text-center">{rank}</td>
                     <td className="px-4 py-3 font-mono">{truncateAddress(walletAddr)}</td>
-                    <td className="px-4 py-3 text-right font-medium">{formatXLM(totalCommitted)}</td>
+                    <td className="px-4 py-3 text-right font-medium"><Money xlm={totalCommitted} /></td>
                     <td className="px-4 py-3 text-right text-muted-foreground">{invoiceCount}</td>
                   </tr>
                 );

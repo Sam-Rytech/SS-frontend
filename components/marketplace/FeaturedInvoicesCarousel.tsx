@@ -20,6 +20,7 @@ import { Progress } from "@/components/ui/progress";
 import { CountdownTimer, isExpired } from "./countdown-timer";
 import { TrendingUp, Clock, Users } from "lucide-react";
 import type { Invoice } from "@/lib/api";
+import { Money } from "@/components/currency";
 
 interface FeaturedInvoicesCarouselProps {
   invoices: Invoice[];
@@ -101,7 +102,7 @@ export function FeaturedInvoicesCarousel({
               <CardContent className="flex flex-1 flex-col gap-3">
                 <div className="flex items-baseline justify-between">
                   <span className="text-lg font-semibold">
-                    {invoice.amount.toLocaleString()} XLM
+                    <Money xlm={invoice.amount} xlmText={`${invoice.amount.toLocaleString()} XLM`} />
                   </span>
                   <CountdownTimer deadline={invoice.due_date} published />
                 </div>

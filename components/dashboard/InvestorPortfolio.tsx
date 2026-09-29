@@ -12,6 +12,7 @@ import { VestingProgressWidget } from "@/components/dashboard/VestingProgressWid
 import { DividendEarningsCard } from "@/components/dashboard/DividendEarningsCard";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { calculateActiveTotal } from "@/lib/portfolio";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 
 export function InvestorPortfolio() {
   const [activeTab, setActiveTab] = useState<"active" | "history" | "payouts">("active");
@@ -39,10 +40,11 @@ export function InvestorPortfolio() {
   const positions = data.positions;
   const activePositions = positions.filter((position) => position.status === "active");
   const historicalPositions = positions.filter((position) => position.status !== "active");
-  const { formattedTotal } = calculateActiveTotal(positions);
+  const { activeTotal, formattedTotal } = calculateActiveTotal(positions);
 
   return (
     <div className="space-y-6">
+      <ExchangeRateDisclaimer />
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardContent className="pt-6">
@@ -51,7 +53,7 @@ export function InvestorPortfolio() {
                 <p className="text-sm text-muted-foreground">
                   Total Committed (Active)
                 </p>
-                <p className="text-2xl font-bold">{formattedTotal}</p>
+                <p className="text-2xl font-bold"><Money xlm={activeTotal} xlmText={formattedTotal} /></p>
               </div>
               {isFetching && (
                 <div

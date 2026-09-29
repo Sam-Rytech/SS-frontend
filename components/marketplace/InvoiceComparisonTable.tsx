@@ -10,6 +10,7 @@ import { REQUIRED_TIER, TIER_LABELS, canInvestInGrade } from "@/lib/suitability"
 import { formatPercent } from "@/lib/format";
 import type { Invoice } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/currency";
 
 /** Percentage of face value already funded, clamped to 0-100. */
 export function fundedPercent(invoice: Invoice): number {
@@ -55,7 +56,9 @@ const ROWS: Row[] = [
   {
     label: "Face value",
     testId: "row-face-value",
-    render: (invoice) => `${invoice.amount.toLocaleString()} XLM`,
+    render: (invoice) => (
+      <Money xlm={invoice.amount} xlmText={`${invoice.amount.toLocaleString()} XLM`} />
+    ),
   },
   {
     label: "Issuer",

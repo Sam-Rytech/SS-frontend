@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TxHash } from "@/components/ui/tx-hash";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 
 export function PayoutHistoryTable() {
   const {
@@ -54,6 +55,7 @@ export function PayoutHistoryTable() {
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto rounded-md border bg-card">
+        <ExchangeRateDisclaimer className="px-3 pt-3" />
         <table className="w-full text-left text-sm" data-testid="payout-history-table">
           <thead className="border-b bg-muted/50 text-muted-foreground">
             <tr>
@@ -81,8 +83,8 @@ export function PayoutHistoryTable() {
                 >
                   <td className="p-3">{row.invoiceId}</td>
                   <td className="p-3">{row.sellerName}</td>
-                  <td className="p-3">{row.amountInvested.toLocaleString()} XLM</td>
-                  <td className="p-3 font-semibold">{row.amountReceived.toLocaleString()} XLM</td>
+                  <td className="p-3"><Money xlm={row.amountInvested} xlmText={`${row.amountInvested.toLocaleString()} XLM`} /></td>
+                  <td className="p-3 font-semibold"><Money xlm={row.amountReceived} xlmText={`${row.amountReceived.toLocaleString()} XLM`} /></td>
                   <td className="p-3">{row.yield}%</td>
                   <td className="p-3 text-muted-foreground">
                     {new Date(row.settledAt).toLocaleDateString()}

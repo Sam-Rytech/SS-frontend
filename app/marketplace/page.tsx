@@ -11,6 +11,7 @@ import { InvoiceCardSkeleton } from "@/components/ui/skeletons";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WatchlistButton } from "@/components/marketplace/WatchlistButton";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 
 function InvoiceRow({ invoice }: { invoice: Invoice }) {
   return (
@@ -31,7 +32,7 @@ function InvoiceRow({ invoice }: { invoice: Invoice }) {
         <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
           <div>
             <span className="block text-foreground font-medium">
-              {invoice.amount.toLocaleString()} XLM
+              <Money xlm={invoice.amount} xlmText={`${invoice.amount.toLocaleString()} XLM`} />
             </span>
             Amount
           </div>
@@ -618,6 +619,7 @@ export default function MarketplacePage() {
     <ComparisonProvider>
       <main className="container mx-auto px-4 py-8 pb-24 space-y-8">
         <h1 className="text-2xl font-bold">Invoice Marketplace</h1>
+        <ExchangeRateDisclaimer />
 
         {/* Featured: highest-yield live invoices, the discovery hook above the fold. */}
         <FeaturedInvoicesCarousel invoices={allInvoices} />

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { RecentlyViewedInvoice } from "@/lib/recentlyViewed";
+import { Money } from "@/components/currency";
 
 const statusVariantMap: Record<string, "default" | "secondary" | "outline" | "destructive" | "ghost"> = {
   open: "outline",
@@ -33,7 +34,7 @@ export function RecentlyViewed({ entries }: RecentlyViewedProps) {
                   {invoice.status}
                 </Badge>
                 <p className="text-sm text-muted-foreground">
-                  {invoice.amount.toLocaleString()} XLM
+                  <Money xlm={invoice.amount} xlmText={`${invoice.amount.toLocaleString()} XLM`} />
                 </p>
               </CardContent>
             </Card>

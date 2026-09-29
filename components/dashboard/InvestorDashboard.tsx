@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePortfolioSummary, useRecentActivity, useUpcomingMaturities } from "@/hooks/useActivity";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 
 export function InvestorDashboard() {
   const { data: portfolio, isLoading: portfolioLoading } = usePortfolioSummary();
@@ -32,6 +33,7 @@ export function InvestorDashboard() {
         <p className="text-muted-foreground mt-1">Welcome back! Here&apos;s an overview of your portfolio.</p>
       </div>
 
+      <ExchangeRateDisclaimer />
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -40,7 +42,7 @@ export function InvestorDashboard() {
           <CardContent>
             <div className="flex items-baseline gap-2">
               <DollarSign className="h-5 w-5 text-muted-foreground" />
-              <span className="text-3xl font-bold">{totalInvested.toLocaleString()} XLM</span>
+              <span className="text-3xl font-bold"><Money xlm={totalInvested} xlmText={`${totalInvested.toLocaleString()} XLM`} /></span>
             </div>
           </CardContent>
         </Card>
@@ -51,7 +53,7 @@ export function InvestorDashboard() {
           <CardContent>
             <div className="flex items-baseline gap-2">
               <TrendingUp className="h-5 w-5 text-green-500" />
-              <span className="text-3xl font-bold text-green-500">{totalYield.toLocaleString()} XLM</span>
+              <span className="text-3xl font-bold text-green-500"><Money xlm={totalYield} xlmText={`${totalYield.toLocaleString()} XLM`} /></span>
             </div>
           </CardContent>
         </Card>
@@ -188,7 +190,7 @@ function MaturityRow({ maturity }: { maturity: { invoice_id: string; title: stri
         </div>
         <div className="flex items-center gap-4 text-right">
           <div>
-            <p className="font-mono text-sm font-medium">{maturity.amount.toLocaleString()} XLM</p>
+            <p className="font-mono text-sm font-medium"><Money xlm={maturity.amount} xlmText={`${maturity.amount.toLocaleString()} XLM`} /></p>
             <p className={cn("text-xs font-medium", urgency)}>
               {maturity.days_remaining} day{maturity.days_remaining !== 1 ? "s" : ""} left
             </p>

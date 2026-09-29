@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useStellarWallet } from "@/hooks/useStellarWallet";
 import { WalletChip } from "@/components/wallet/WalletChip";
+import { UsdcBalanceChip } from "@/components/wallet/UsdcBalanceChip";
+import { ConnectWalletModal } from "@/components/wallet/ConnectWalletModal";
+import { CurrencyToggle } from "./CurrencyToggle";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +17,7 @@ export function Navbar() {
   const { address, network, isConnected, isConnecting, disconnect, refreshNetwork } =
     useStellarWallet();
   const { count, isLoading } = useWatchlist();
+  const [connectOpen, setConnectOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -55,6 +59,8 @@ export function Navbar() {
               </Link>
             </>
           )}
+          {/* #437 — USD / XLM display toggle */}
+          <CurrencyToggle />
           {isConnected ? (
             <div className="flex items-center gap-2">
               {/* USDC balance (#402) sits next to the connected address. */}

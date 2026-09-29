@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { fetchInvestorPayouts, type PayoutRecord } from "@/lib/api";
-import { formatXLM } from "@/lib/format";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 import { availableFractions } from "@/lib/portfolio";
 import { FractionTransferModal } from "@/components/dashboard/FractionTransferModal";
 import { SettlementCountdown } from "@/components/marketplace/SettlementCountdown";
@@ -124,7 +124,7 @@ function HoldingsTab() {
                     </span>
                   )}
                 </td>
-                <td className="p-3">{formatXLM(pos.committed_amount)}</td>
+                <td className="p-3"><Money xlm={pos.committed_amount} /></td>
                 <td className="p-3 text-muted-foreground">
                   {pos.lockup_expires_at ? (
                     /*
@@ -205,18 +205,19 @@ function ReturnsTab() {
 
   return (
     <div className="space-y-4" data-testid="returns-tab">
+      <ExchangeRateDisclaimer />
       <div className="grid gap-4 sm:grid-cols-2">
         <Card>
           <CardContent className="pt-6 space-y-1">
             <p className="text-sm text-muted-foreground">Total Invested</p>
-            <p className="text-2xl font-bold">{formatXLM(totalInvested)}</p>
+            <p className="text-2xl font-bold"><Money xlm={totalInvested} /></p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 space-y-1">
             <p className="text-sm text-muted-foreground">Total Yield Earned</p>
             <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {formatXLM(totalYieldEarned)}
+              <Money xlm={totalYieldEarned} />
             </p>
           </CardContent>
         </Card>
@@ -422,6 +423,7 @@ export function InvestorPortfolioPage() {
 
   return (
     <div className="space-y-6" data-testid="investor-portfolio-page">
+      <ExchangeRateDisclaimer />
       {/* Summary card */}
       <Card>
         <CardContent className="pt-6">
@@ -433,7 +435,7 @@ export function InvestorPortfolioPage() {
               {isLoading ? (
                 <Skeleton className="h-7 w-32 mt-1" />
               ) : (
-                <p className="text-2xl font-bold">{formatXLM(totalCommitted)}</p>
+                <p className="text-2xl font-bold"><Money xlm={totalCommitted} /></p>
               )}
             </div>
             {isFetching && !isLoading && (

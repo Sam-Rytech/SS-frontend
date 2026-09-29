@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Money } from "@/components/currency";
 
 interface SettlementReturnCardProps {
   payout: number | null;
@@ -35,7 +36,7 @@ export function SettlementReturnCard({ payout, committedAmount }: SettlementRetu
         <h3 className="text-sm font-medium text-muted-foreground">Settlement Payout</h3>
       </CardHeader>
       <CardContent className="space-y-1">
-        <p className="text-2xl font-bold">{payout.toLocaleString()} XLM</p>
+        <p className="text-2xl font-bold"><Money xlm={payout} xlmText={`${payout.toLocaleString()} XLM`} /></p>
         <p className="text-sm text-muted-foreground">{returnPercent}% return</p>
       </CardContent>
     </Card>

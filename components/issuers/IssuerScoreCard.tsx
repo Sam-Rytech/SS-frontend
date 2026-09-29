@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatXLM } from "@/lib/format";
+import { Money } from "@/components/currency";
 import {
   computeReputationScore,
   type IssuerInvoice,
@@ -140,7 +140,7 @@ export function TotalFunded({ totalFunded }: TotalFundedProps) {
     <div>
       <p className="text-xs text-muted-foreground">Total funded</p>
       <p data-testid="issuer-total-funded" className="text-sm font-semibold">
-        {formatXLM(totalFunded)}
+        <Money xlm={totalFunded} />
       </p>
     </div>
   );

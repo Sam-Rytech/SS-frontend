@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInvoiceProtection } from "@/hooks/useInvoiceProtection";
-import { formatXLM } from "@/lib/format";
+import { Money } from "@/components/currency";
 import { Info } from "lucide-react";
 
 const SELL_TAX_TOOLTIP =
@@ -52,7 +52,7 @@ export function InvoiceProtectionInfo({ invoiceId }: { invoiceId: string }) {
         <CardContent className="flex items-center gap-2 px-3 py-1.5 text-xs">
           <span className="text-muted-foreground">Buyback pool</span>
           <span className="font-semibold">
-            {formatXLM(data.buyback_pool_balance)}
+            <Money xlm={data.buyback_pool_balance} />
           </span>
           <span
             className="inline-flex cursor-help items-center text-muted-foreground"

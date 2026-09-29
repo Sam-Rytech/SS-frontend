@@ -37,6 +37,7 @@ import { InvoiceTagPills } from "@/components/marketplace/InvoiceTagPills";
 import { SettlementCountdown } from "@/components/marketplace/SettlementCountdown";
 import { truncateAddress } from "@/lib/stellar";
 import { DEFAULT_MIN_INVESTMENT } from "@/lib/invoiceDefaults";
+import { Money } from "@/components/currency";
 
 function InvoiceDetailSkeleton() {
   return (
@@ -361,7 +362,7 @@ export function InvoiceDetailView({ invoiceId }: InvoiceDetailViewProps) {
                     </p>
                   </div>
                 </div>
-                <p className="text-sm font-medium">{investor.amount.toLocaleString()} XLM</p>
+                <p className="text-sm font-medium"><Money xlm={investor.amount} xlmText={`${investor.amount.toLocaleString()} XLM`} /></p>
               </div>
             ))}
           </CardContent>

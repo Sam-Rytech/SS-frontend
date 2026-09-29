@@ -9,6 +9,7 @@ import { InvestorDemandMetrics } from "./InvestorDemandMetrics";
 import { useComparison } from "./InvoiceComparisonContext";
 import { Lock, Scale } from "lucide-react";
 import type { Invoice } from "@/lib/api";
+import { Money } from "@/components/currency";
 import { useSuitabilityTier } from "@/hooks/useSuitabilityTier";
 import { REQUIRED_TIER, TIER_LABELS, canInvestInGrade } from "@/lib/suitability";
 
@@ -47,7 +48,7 @@ export function InvoiceCard({ invoice, onInvest }: InvoiceCardProps) {
       <CardContent className="flex flex-1 flex-col gap-3">
         <div className="flex items-center justify-between">
           <span className="text-lg font-semibold">
-            {invoice.amount.toLocaleString()} XLM
+            <Money xlm={invoice.amount} xlmText={`${invoice.amount.toLocaleString()} XLM`} />
           </span>
           <CountdownTimer deadline={invoice.due_date} published={published} />
         </div>

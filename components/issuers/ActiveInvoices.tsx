@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FundingProgressBar } from "@/components/invoices/FundingProgressBar";
 import { CountdownTimer } from "@/components/marketplace";
-import { formatPercent, formatXLM } from "@/lib/format";
+import { formatPercent } from "@/lib/format";
+import { Money } from "@/components/currency";
 import {
   formatDate,
   fundingProgressPercent,
@@ -84,7 +85,7 @@ export function ActiveInvoices({ invoices, isLoading = false, now }: ActiveInvoi
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold tabular-nums">
-                    {formatXLM(invoice.face_value)}
+                    <Money xlm={invoice.face_value} />
                   </p>
                   <CountdownTimer
                     deadline={invoice.maturity_date}

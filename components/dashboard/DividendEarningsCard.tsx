@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight } from "lucide-react";
+import { Money, ExchangeRateDisclaimer } from "@/components/currency";
 
 interface DividendData {
   totalEarned: number;
@@ -87,11 +88,19 @@ export function DividendEarningsCard() {
                 Dividend Earnings
               </p>
               <p className="text-2xl font-bold">
-                {dividends.totalEarned.toLocaleString()} XLM
+                <Money
+                  xlm={dividends.totalEarned}
+                  xlmText={`${dividends.totalEarned.toLocaleString()} XLM`}
+                />
               </p>
+              <ExchangeRateDisclaimer className="mt-1 max-w-md" />
               {dividends.pendingClaims > 0 && (
                 <p className="text-xs text-yellow-600 mt-1">
-                  {dividends.pendingClaims.toLocaleString()} XLM pending
+                  <Money
+                    xlm={dividends.pendingClaims}
+                    xlmText={`${dividends.pendingClaims.toLocaleString()} XLM`}
+                  />{" "}
+                  pending
                 </p>
               )}
             </div>
@@ -122,7 +131,7 @@ export function DividendEarningsCard() {
                 >
                   <span className="text-muted-foreground">{claim.cycle}</span>
                   <span className="font-semibold">
-                    {claim.amount.toLocaleString()} XLM
+                    <Money xlm={claim.amount} xlmText={`${claim.amount.toLocaleString()} XLM`} />
                   </span>
                 </div>
               ))}
