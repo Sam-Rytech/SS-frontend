@@ -33,8 +33,6 @@ export function PositionCard({ position }: PositionCardProps) {
   const isKeyHolding = Boolean(position.key_id);
   const hasTransferableBalance = isKeyHolding && (position.quantity ?? 0) > 0;
   const canTopUp = position.status === "active" && (position.remaining_capacity ?? 0) > 0;
-  const hasTransferableBalance =
-    Boolean(position.key_id) && (position.quantity ?? 0) > 0;
 
   return (
     <Card data-testid="position-card">

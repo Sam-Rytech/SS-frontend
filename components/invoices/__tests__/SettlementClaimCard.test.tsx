@@ -86,10 +86,14 @@ describe("ClaimedHistoryCard", () => {
   it("links the transaction hash to the Stellar block explorer", () => {
     render(<ClaimedHistoryCard entry={makeHistory({ tx_hash: "deadbeef" })} />);
 
-    const link = screen.getByTestId("tx-link");
+    // TxHash's `testId` prop only labels the hash display span; the
+    // explorer link itself always carries its own fixed testid. The
+    // default network (testnet, per NEXT_PUBLIC_STELLAR_NETWORK) picks
+    // the URL's path segment.
+    const link = screen.getByTestId("tx-hash-explorer-link");
     expect(link).toHaveAttribute(
       "href",
-      "https://stellar.expert/explorer/public/tx/deadbeef",
+      "https://stellar.expert/explorer/testnet/tx/deadbeef",
     );
     expect(link).toHaveAttribute("target", "_blank");
   });
@@ -97,6 +101,6 @@ describe("ClaimedHistoryCard", () => {
   it("does not render a transaction link when no tx_hash is present", () => {
     render(<ClaimedHistoryCard entry={makeHistory({ tx_hash: "" })} />);
 
-    expect(screen.queryByTestId("tx-link")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("tx-hash-explorer-link")).not.toBeInTheDocument();
   });
 });
