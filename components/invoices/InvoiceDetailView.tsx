@@ -20,6 +20,7 @@ import { InvoiceBackButton } from "@/components/invoices/InvoiceBackButton";
 import { InvoiceDocumentsTab } from "@/components/invoices/InvoiceDocumentsTab";
 import { InvoiceFinancials } from "@/components/invoices/InvoiceFinancials";
 import { InvoiceMetaTags } from "@/components/invoices/InvoiceMetaTags";
+import { InvestorSocialProof } from "@/components/invoices/InvestorSocialProof";
 import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
 import { InvestmentModal } from "@/components/invoices/InvestmentModal";
 import { InvoiceRatingWidget } from "@/components/invoices/InvoiceRatingWidget";
@@ -204,6 +205,7 @@ export function InvoiceDetailView({ invoiceId }: InvoiceDetailViewProps) {
         status={invoice.status}
         amount={invoice.amount}
         invoiceId={invoice.id}
+        investorCount={invoice.investor_count}
       />
 
       {/* Header: title, issuer, status and time left to fund. */}
@@ -234,7 +236,7 @@ export function InvoiceDetailView({ invoiceId }: InvoiceDetailViewProps) {
               <InvoiceStatusBadge status={invoice.status} />
               <DaysRemainingBadge dueDate={invoice.due_date} status={invoice.status} />
               <WatchlistButton invoiceId={invoice.id} />
-              <ShareInvoiceButton />
+              <ShareInvoiceButton invoiceId={invoice.id} title={invoice.title} />
             </div>
           </div>
 
@@ -293,6 +295,9 @@ export function InvoiceDetailView({ invoiceId }: InvoiceDetailViewProps) {
             target={invoice.amount}
             investorCount={invoice.investor_count}
           />
+          <div className="mt-3">
+            <InvestorSocialProof count={invoice.investor_count} />
+          </div>
           {isFetching && (
             <p className="mt-2 text-xs text-muted-foreground" data-testid="invoice-refreshing">
               Refreshing…
