@@ -3,10 +3,16 @@ import { render, screen } from "@testing-library/react";
 import { KycStatusBanner } from "../KycStatusBanner";
 
 describe("KycStatusBanner", () => {
-    it("renders nothing when pending", () => {
-        const { container } = render(<KycStatusBanner status="pending" />);
+    it("renders a pending review banner with a link to KYC status", () => {
+        render(<KycStatusBanner status="pending" />);
 
-        expect(container).toBeEmptyDOMElement();
+        expect(
+            screen.getByText("Your KYC submission is under review.")
+        ).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "View status" })).toHaveAttribute(
+            "href",
+            "/kyc/status"
+        );
     });
 
     it("renders the rejected message with reason and a Go to KYC link", () => {
@@ -32,10 +38,11 @@ describe("KycStatusBanner", () => {
         );
     });
 
-    it("renders nothing when approved", () => {
-        const { container } = render(<KycStatusBanner status="approved" />);
+    it("renders a verified badge when approved", () => {
+        render(<KycStatusBanner status="approved" />);
 
-        expect(container).toBeEmptyDOMElement();
+        expect(screen.getByText("Verified seller")).toBeInTheDocument();
+        expect(screen.getByRole("status")).toBeInTheDocument();
     });
 
     it("renders the not submitted message with a Start KYC button", () => {

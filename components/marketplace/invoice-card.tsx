@@ -7,6 +7,7 @@ import { InvoiceTagPills } from "./InvoiceTagPills";
 import { SettlementCountdown } from "./SettlementCountdown";
 import { InvestorDemandMetrics } from "./InvestorDemandMetrics";
 import { useComparison } from "./InvoiceComparisonContext";
+import { ShareInvoiceButton } from "@/components/invoices/ShareInvoiceButton";
 import { Lock, Scale } from "lucide-react";
 import type { Invoice } from "@/lib/api";
 import { Money } from "@/components/currency";
@@ -94,6 +95,7 @@ export function InvoiceCard({ invoice, onInvest }: InvoiceCardProps) {
           >
             {expired ? "Expired" : locked ? "Locked" : "Invest"}
           </Button>
+          <ShareInvoiceButton invoiceId={invoice.id} title={invoice.title} />
           <CompareToggleButton invoice={invoice} />
         </div>
       </CardContent>

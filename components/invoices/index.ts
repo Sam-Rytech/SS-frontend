@@ -14,6 +14,8 @@ export { SettlementReturnCard } from "./SettlementReturnCard";
 export { PublishInvoiceForm } from "./PublishInvoiceForm";
 export { EditInvoiceForm } from "./EditInvoiceForm";
 export { ShareInvoiceButton } from "./ShareInvoiceButton";
+export { InvestorSocialProof } from "./InvestorSocialProof";
+export { InvoiceMetaTags } from "./InvoiceMetaTags";
 export { InvestmentModal } from "./InvestmentModal";
 export { WatchlistButton } from "./WatchlistButton";
 export { DeadlineExtensionForm } from "./DeadlineExtensionForm";

@@ -7,6 +7,10 @@
  * It reads and writes the shared CurrencyProvider state, so switching here
  * re-renders every <Money /> on the page and the choice persists (the
  * provider saves it to localStorage).
+ *
+ * The live rate is shown next to the toggle by default, in the navbar too
+ * (#309: "live rate displayed alongside the toggle"); pass showRate={false}
+ * to hide it.
  */
 
 import { AlertTriangle } from "lucide-react";
@@ -16,11 +20,11 @@ import { cn } from "@/lib/utils";
 
 interface CurrencyToggleProps {
   className?: string;
-  /** Show the current rate next to the toggle (settings page). */
+  /** Show the current rate next to the toggle (default: shown). */
   showRate?: boolean;
 }
 
-export function CurrencyToggle({ className, showRate = false }: CurrencyToggleProps) {
+export function CurrencyToggle({ className, showRate = true }: CurrencyToggleProps) {
   const { currency, setCurrency, rate, isStale, rateError, rateLoading } = useCurrency();
   const usdUnavailable = currency === "USD" && rate === null && !rateLoading;
 
@@ -38,6 +42,7 @@ export function CurrencyToggle({ className, showRate = false }: CurrencyTogglePr
               key={option}
               type="button"
               aria-pressed={active}
+              aria-label={`Show values in ${option}`}
               onClick={() => setCurrency(option)}
               data-testid={`currency-option-${option.toLowerCase()}`}
               className={cn(

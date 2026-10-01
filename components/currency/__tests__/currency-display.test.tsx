@@ -92,7 +92,9 @@ describe("currency toggle", () => {
       expect(option).toHaveAttribute("aria-pressed", "true");
     }
     expect(screen.getByTestId("price")).toHaveTextContent("$200.00");
-    expect(screen.getByTestId("currency-rate")).toHaveTextContent("1 XLM ≈ $0.2000");
+    for (const rate of screen.getAllByTestId("currency-rate")) {
+      expect(rate).toHaveTextContent("1 XLM ≈ $0.2000");
+    }
   });
 });
 
@@ -220,7 +222,7 @@ describe("disclaimer", () => {
 });
 
 describe("useCurrency outside a provider", () => {
-  it("falls back to XLM so isolated components render as before", () => {
+  it("defaults to XLM so isolated components render as before", () => {
     function Probe() {
       const { currency, format } = useCurrency();
       return (
