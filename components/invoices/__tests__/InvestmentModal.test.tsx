@@ -137,7 +137,9 @@ describe("InvestmentModal USDC balance guard (#402)", () => {
       target: { value: "1000" },
     });
 
-    expect(screen.getByTestId("insufficient-balance")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByTestId("insufficient-balance")).toBeInTheDocument()
+    );
     expect(screen.getByTestId("insufficient-balance")).toHaveTextContent("900.00 USDC");
   });
 
@@ -164,7 +166,39 @@ describe("InvestmentModal USDC balance guard (#402)", () => {
       target: { value: "1000" },
     });
 
-    expect(screen.getByTestId("investment-submit")).toBeEnabled();
+    await waitFor(() =>
+      expect(screen.getByTestId("investment-submit")).toBeEnabled()
+    );
+  });
+
+  it("displays the minimum investment label and disables submit below minimum (#436)", async () => {
+    vi.spyOn(stellarUsdc, "fetchUsdcBalance").mockResolvedValue(5_000);
+
+    openModal();
+
+    await waitFor(() => expect(screen.getByTestId("investment-modal-balance")).toBeInTheDocument());
+
+    // Minimum investment label displayed on modal
+    expect(screen.getByTestId("investment-modal-min-investment")).toBeInTheDocument();
+    expect(screen.getByTestId("investment-modal-min-value")).toHaveTextContent("10.00 XLM");
+
+    // Enter amount below minimum (min is 10)
+    fireEvent.change(screen.getByLabelText(/Investment amount/i), {
+      target: { value: "5" },
+    });
+
+    // Confirm button must be disabled while validation error is active
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent("Minimum investment is 10 XLM");
+    });
+    expect(screen.getByTestId("investment-submit")).toBeDisabled();
+
+    // Clicking Min preset populates 10 and clears error
+    fireEvent.click(screen.getByTestId("preset-min"));
+    await waitFor(() => {
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.getByTestId("investment-submit")).toBeEnabled();
+    });
   });
 
   it("does not accuse the user of being short before the balance loads", () => {

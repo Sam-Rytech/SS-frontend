@@ -19,8 +19,32 @@ const KYC_START_ROUTE = "/kyc/start";
 const KYC_REAPPLY_ROUTE = "/kyc/reapply";
 
 export function KycStatusBanner({ status, reason }: KycStatusBannerProps) {
-  if (status === "approved" || status === "pending") {
-    return null;
+  if (status === "approved") {
+    return (
+      <div
+        role="status"
+        className="flex items-center gap-2 rounded-md border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800"
+        data-testid="kyc-approved-banner"
+      >
+        <span aria-hidden="true">✓</span>
+        <p>Verified seller</p>
+      </div>
+    );
+  }
+
+  if (status === "pending") {
+    return (
+      <div
+        role="status"
+        className="flex items-center justify-between gap-4 rounded-md border bg-muted px-4 py-3 text-sm"
+        data-testid="kyc-pending-banner"
+      >
+        <p>Your KYC submission is under review.</p>
+        <Link href="/kyc/status" className="underline underline-offset-4">
+          View status
+        </Link>
+      </div>
+    );
   }
 
   if (status === "requires_resubmission") {

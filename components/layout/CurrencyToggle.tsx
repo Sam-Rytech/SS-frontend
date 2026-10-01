@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 
 export function CurrencyToggle() {
-  const { currency, toggleCurrency, isStale } = useCurrency();
+  const { currency, toggleCurrency, rate, isStale } = useCurrency();
 
   return (
     <div className="flex items-center gap-1">
@@ -19,6 +19,14 @@ export function CurrencyToggle() {
       >
         {currency === "XLM" ? "XLM" : "USD"}
       </Button>
+      {rate !== null && (
+        <span
+          className="text-xs text-muted-foreground font-mono"
+          data-testid="currency-rate"
+        >
+          1 XLM = ${rate.toFixed(4)}
+        </span>
+      )}
       {isStale && (
         <span
           className="text-amber-500"

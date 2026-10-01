@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { submitKyc, fetchKycStatus, uploadDocument, type KycSubmission, type KycStatus } from "@/lib/api";
+import { submitBusinessKyc, fetchKycStatus, uploadDocument, type KycSubmission, type KycStatus } from "@/lib/api";
 import { toast } from "sonner";
 
 export function useKycStatus() {
@@ -13,7 +13,7 @@ export function useKycStatus() {
 
 export function useKycSubmit() {
   return useMutation({
-    mutationFn: submitKyc,
+    mutationFn: submitBusinessKyc,
     onSuccess: () => {
       toast.success("KYC submitted successfully. Your application is under review.");
     },
