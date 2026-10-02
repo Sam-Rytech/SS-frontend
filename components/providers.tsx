@@ -8,6 +8,7 @@ import { notifyApiError } from "@/lib/apiErrors";
 
 import { AuthProvider } from "@/context/AuthContext";
 import { WalletProvider } from "@/context/WalletContext";
+import { AccreditationProvider } from "@/context/AccreditationContext";
 import { PlatformOnboardingTour } from "@/components/onboarding/PlatformOnboardingTour";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -32,9 +33,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {/* #379 — one shared wallet session for the whole app */}
         <WalletProvider>
           <AuthProvider>
-            {children}
-            <PlatformOnboardingTour />
-            <Toaster position="top-right" />
+            <AccreditationProvider>
+              {children}
+              <PlatformOnboardingTour />
+              <Toaster position="top-right" />
+            </AccreditationProvider>
           </AuthProvider>
         </WalletProvider>
       </QueryClientProvider>

@@ -242,3 +242,12 @@ export function truncateAddress(address: string): string {
   if (address.length <= 8) return address;
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
+
+/**
+ * Builds a StellarExpert block-explorer link for a submitted transaction
+ * hash (issue #310), pointed at the correct network so the link resolves.
+ */
+export function getExplorerUrl(txHash: string, network: Network): string {
+  const networkSegment = network === "mainnet" ? "public" : "testnet";
+  return `https://stellar.expert/explorer/${networkSegment}/tx/${txHash}`;
+}

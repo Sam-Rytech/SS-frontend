@@ -73,6 +73,21 @@ export function countByTab<T extends { status: TabbableStatus }>(
   );
 }
 
+/** The tab a given raw status falls under, for driving `SellerInvoiceTabs`
+ * from an external status-level filter (e.g. the dashboard's pipeline
+ * breakdown, issue #313). */
+export function tabForStatus(status: TabbableStatus): InvoiceTab {
+  const tab = INVOICE_TABS.find((candidate) =>
+    TAB_STATUSES[candidate].includes(status),
+  );
+  // Every `TabbableStatus` is covered by TAB_STATUSES above, so this is
+  // unreachable outside of a status value added there without a tab mapping.
+  if (!tab) {
+    throw new Error(`No tab mapped for invoice status "${status}"`);
+  }
+  return tab;
+}
+
 /** True when the invoice can still be edited and resubmitted by its issuer. */
 export function isEditable(invoice: Pick<Invoice, "status">): boolean {
   return invoice.status === "draft" || invoice.status === "rejected";
