@@ -1,9 +1,11 @@
 "use client";
 
+import { useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { investInInvoice, transferInvoiceFractions, transferInvoicePosition } from "@/lib/api";
 import type { InvoiceDetail } from "@/lib/api";
 import { toast } from "sonner";
+import { getNetwork, getExplorerUrl } from "@/lib/stellar";
 import { INVOICES_QUERY_KEY } from "./useInvoices";
 import { PORTFOLIO_QUERY_KEY } from "./usePortfolio";
 
@@ -12,14 +14,32 @@ interface InvestMutationVars {
   amount: number;
 }
 
+/** One toast id per invoice so the pending state morphs into the resolved
+ * state in place, rather than stacking a second toast (issue #310). */
+function investTxToastId(invoiceId: string): string {
+  return `invest-tx-${invoiceId}`;
+}
+
 export function useInvestMutation() {
   const queryClient = useQueryClient();
+  // Always-fresh reference to the mutation's own `mutate`, so the retry CTA
+  // on a failure toast can resubmit the same variables without a circular
+  // reference to the mutation object being constructed below.
+  const mutateRef = useRef<(vars: InvestMutationVars) => void>(() => {});
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: ({ invoiceId, amount }: InvestMutationVars) =>
       investInInvoice(invoiceId, amount),
 
     onMutate: async ({ invoiceId, amount }) => {
+      // Transaction status toast, shown synchronously and immediately on
+      // submission (issue #310) — before the cancelQueries await below so
+      // there's no delay, however small, before the wallet sees feedback.
+      // Persisted (by re-using this id) until confirmation or failure.
+      toast.loading("Submitting transaction…", {
+        id: investTxToastId(invoiceId),
+      });
+
       await queryClient.cancelQueries({ queryKey: ["invoice", invoiceId] });
 
       const previous = queryClient.getQueryData<InvoiceDetail>([
@@ -45,17 +65,37 @@ export function useInvestMutation() {
       return { previous };
     },
 
-    onError: (_err, { invoiceId }, context) => {
+    onError: (_err, vars, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(["invoice", invoiceId], context.previous);
+        queryClient.setQueryData(["invoice", vars.invoiceId], context.previous);
       }
-      toast.error("Investment failed. Your progress bar has been restored.");
+      toast.error("Investment failed. Your progress bar has been restored.", {
+        id: investTxToastId(vars.invoiceId),
+        action: {
+          label: "Retry",
+          onClick: () => mutateRef.current(vars),
+        },
+      });
     },
 
-    onSuccess: (_data, { amount }) => {
-      toast.success(`Investment of ${amount.toLocaleString()} XLM committed successfully`, {
-        duration: 5000,
-      });
+    onSuccess: async (data, { invoiceId, amount }) => {
+      const network = await getNetwork();
+      const explorerUrl =
+        data.tx_hash && network ? getExplorerUrl(data.tx_hash, network) : null;
+
+      toast.success(
+        `Investment of ${amount.toLocaleString()} XLM committed successfully`,
+        {
+          id: investTxToastId(invoiceId),
+          duration: 5000,
+          action: explorerUrl
+            ? {
+                label: "View on Explorer",
+                onClick: () => window.open(explorerUrl, "_blank"),
+              }
+            : undefined,
+        },
+      );
     },
 
     onSettled: (_data, _error, { invoiceId }) => {
@@ -64,6 +104,10 @@ export function useInvestMutation() {
       queryClient.invalidateQueries({ queryKey: PORTFOLIO_QUERY_KEY });
     },
   });
+
+  mutateRef.current = mutation.mutate;
+
+  return mutation;
 }
 
 interface TransferPositionMutationVars {

@@ -19,6 +19,7 @@ import {
   filterByTab,
   isDeletable,
   isEditable,
+  tabForStatus,
   type InvoiceTab,
 } from "@/lib/invoiceStatus";
 import type { Invoice } from "@/lib/api";
@@ -165,24 +166,45 @@ function InvoiceRow({
 
 interface SellerInvoiceTabsProps {
   invoices: Invoice[];
+  /**
+   * An external, status-level filter (e.g. the dashboard's pipeline
+   * breakdown, issue #313) narrower than a tab — `open` and `rejected` are
+   * each one status among several a tab accepts. When set, the matching tab
+   * is forced active and the list is narrowed to exactly this status;
+   * `null` (the default) leaves tab selection and filtering as-is.
+   */
+  statusFilter?: Invoice["status"] | null;
 }
 
 /**
  * Issuer-facing invoice list, split by lifecycle state with the actions each
  * state allows.
  */
-export function SellerInvoiceTabs({ invoices }: SellerInvoiceTabsProps) {
-  const [activeTab, setActiveTab] = useState<InvoiceTab>("draft");
+export function SellerInvoiceTabs({
+  invoices,
+  statusFilter = null,
+}: SellerInvoiceTabsProps) {
+  const [manualTab, setManualTab] = useState<InvoiceTab>("draft");
   const [pendingDelete, setPendingDelete] = useState<Invoice | null>(null);
 
   const submitMutation = useSubmitDraftInvoice();
   const deleteMutation = useDeleteDraftInvoice();
 
+  const activeTab = statusFilter ? tabForStatus(statusFilter) : manualTab;
+  const setActiveTab = (tab: InvoiceTab) => {
+    // An explicit tab click always means "show me this tab", which only
+    // makes sense once the external status filter stops overriding it — the
+    // dashboard's own "All" pipeline button is what clears statusFilter.
+    setManualTab(tab);
+  };
+
   const counts = useMemo(() => countByTab(invoices), [invoices]);
-  const visible = useMemo(
-    () => filterByTab(invoices, activeTab),
-    [invoices, activeTab],
-  );
+  const visible = useMemo(() => {
+    const byTab = filterByTab(invoices, activeTab);
+    return statusFilter
+      ? byTab.filter((invoice) => invoice.status === statusFilter)
+      : byTab;
+  }, [invoices, activeTab, statusFilter]);
 
   const confirmDelete = () => {
     if (!pendingDelete) return;
